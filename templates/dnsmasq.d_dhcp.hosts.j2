@@ -1,0 +1,46 @@
+# {{ ansible_managed }}
+#
+# {{ dnsmasq_path_dhcp_hosts }} (0644): dnsmasq dhcp hosts configuration
+#
+# Gets reloaded at SIGHUP instead of service restart. ;-)
+
+#######################################################################################################################
+# DHCP  HOSTS                                                                                                         #
+# ------------------------------------------------------------------------------------------------------------------- #
+# 11:22:33:44:55:66,192.168.0.60                 Always allocate the host with ethernet address 11:22:33:44:55:66     #
+#                                                The IP address 192.168.0.60                                          #
+#                                                                                                                     #
+# 11:22:33:44:55:66,fred                         Always set the name of the host with hardware address                #
+#                                                11:22:33:44:55:66 to be "fred"                                       #
+#                                                                                                                     #
+# 11:22:33:44:55:66,fred,192.168.0.60,45m        Always give the host with ethernet address 11:22:33:44:55:66         #
+#                                                the name fred and IP address 192.168.0.60 and lease time 45 minutes  #
+#                                                                                                                     #
+# bert,192.168.0.70,infinite                     Give the machine which says it's name is "bert" IP address           #
+#                                                192.168.0.70 and an infinite lease                                   #
+#                                                                                                                     #
+# id:01:02:02:04,192.168.0.60                    Always give the host with client identifier 01:02:02:04              #
+#                                                the IP address 192.168.0.60                                          #
+#                                                                                                                     #
+# id:marjorie,192.168.0.60                       Always give the host with client identifier "marjorie"               #
+#                                                the IP address 192.168.0.60                                          #
+#                                                                                                                     #
+# judge                                          Enable the address given for "judge" in /etc/hosts                   #
+#                                                to be given to a machine presenting the name "judge" when            #
+#                                                it asks for a DHCP lease.                                            #
+#                                                                                                                     #
+# 11:22:33:44:55:66,ignore                       Never offer DHCP service to a machine whose ethernet                 #
+#                                                address is 11:22:33:44:55:66                                         #
+#                                                                                                                     #
+# 11:22:33:44:55:66,net:red                      Send extra options which are tagged as "red" to                      #
+#                                                the machine with ethernet address 11:22:33:44:55:66                  #
+#                                                                                                                     #
+# 11:22:33:*:*:*,net:red                         Send extra options which are tagged as "red" to                      #
+#                                                any machine with ethernet address starting 11:22:33:                 #
+#                                                                                                                     #
+#######################################################################################################################
+{% for s in dnsmasq_dhcp_hosts %}
+{{ s }}
+{% endfor %}
+
+

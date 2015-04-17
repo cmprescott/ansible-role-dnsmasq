@@ -1,0 +1,23 @@
+---
+galaxy_info:
+  author: Prescott Chris
+  description: Installs dnsmasq. Configures from SIMPLE templates.
+  company: your company (optional)
+  license: BSD
+  min_ansible_version: 1.5
+  platforms:
+  - name: EL
+    versions:
+    - all
+  - name: Fedora
+    versions:
+    - all
+  - name: Ubuntu
+    versions:
+    - all
+  - name: Debian
+    versions:
+    - all
+  categories:
+  - networking
+dependencies: []

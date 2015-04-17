@@ -1,0 +1,276 @@
+# {{ ansible_managed }}
+#
+# {{ dnsmasq_path_conf }} (0644): dnsmasq configuration
+#
+# Based off http://oss.segetech.com/intra/srv/dnsmasq.conf
+
+#######################################################################################################################
+# DNSMASQ DNS   'CACHING'                                                                                             #
+# ------------------------------------------------------------------------------------------------------------------- #
+# cache-size=150                                 Set the cachesize here.                                              #
+#                                                                                                                     #
+# no-negcache                                    If you want to disable negative caching, uncomment this.             #
+#                                                                                                                     #
+# local-ttl=                                     Normally responses which come form /etc/hosts and the DHCP lease     #
+#                                                file have Time-To-Live set as zero, which conventionally means       #
+#                                                do not cache further. If you are happy to trade lower load on the    #
+#                                                server for potentially stale date, you can set a time-to-live (in    #
+#                                                seconds) here.                                                       #
+#                                                                                                                     #
+# bogus-nxdomain=64.94.110.11                    If you want dnsmasq to detect attempts by Verisign to send queries   #
+#                                                to unregistered .com and .net hosts to its sitefinder service and    #
+#                                                have dnsmasq instead return the correct NXDOMAIN response, uncomment #
+#                                                this line. You can add similar lines to do the same for other        #
+#                                                registries which have implemented wildcard A records.                #
+#                                                                                                                     #
+# alias=1.2.3.4,5.6.7.8                          If you want to fix up DNS results from upstream servers, use the     #
+#                                                alias option. This only works for IPv4.                              #
+#                                                This alias makes a result of 1.2.3.4 appear as 5.6.7.8               #
+#                                                                                                                     #
+# alias=1.2.3.0,5.6.7.0,255.255.255.0            and this maps 1.2.3.x to 5.6.7.x                                     #
+#                                                                                                                     #
+#######################################################################################################################
+{% for s in dnsmasq_dns_cache %}
+{{ s }}
+{% endfor %}
+
+#######################################################################################################################
+# DNSMASQ DNS  'DOMAINS'                                                                                              #
+# ------------------------------------------------------------------------------------------------------------------- #
+# domain=thekelleys.org.uk                       Set the domain for dnsmasq. this is optional, but if it is set, it   #
+#                                                does the following things.                                           #
+#                                                1) Allows DHCP hosts to have fully qualified domain names, as long   #
+#                                                   as the domain part matches this setting.                          #
+#                                                2) Sets the "domain" DHCP option thereby potentially setting the     #
+#                                                   domain of all systems configured by DHCP                          #
+#                                                3) Provides the domain part for "expand-hosts"                       #
+#                                                                                                                     #
+# local=/localnet/                               Add local-only domains here, queries in these domains are answered   #
+#                                                from /etc/hosts or DHCP only.                                        #
+#                                                                                                                     #
+#######################################################################################################################
+{% for s in dnsmasq_dns_domains %}
+{{ s }}
+{% endfor %}
+
+#######################################################################################################################
+# DNSMASQ DNS  'FILTERS'                                                                                              #
+# ------------------------------------------------------------------------------------------------------------------- #
+# domain-needed                                  Never forward plain names (without a dot or domain part)             #
+#                                                                                                                     #
+# bogus-priv                                     Never forward addresses in the non-routed address spaces.            #
+#                                                                                                                     #
+# filterwin2k                                    Uncomment this to filter useless windows-originated DNS requests     #
+#                                                which can trigger dial-on-demand links needlessly.                   #
+#                                                Note that (amongst other things) this blocks all SRV requests,       #
+#                                                so don't use it if you use eg Kerberos.                              #
+#                                                This option only affects forwarding, SRV records originating for     #
+#                                                dnsmasq (via srv-host= lines) are not suppressed by it.              #
+#                                                                                                                     #
+# address=/doubleclick.net/127.0.0.1             Add domains which you want to force to an IP address here.           #
+#                                                The example to left send any host in doubleclick.net to a local      #
+#                                                webserver.                                                           #
+#                                                                                                                     #
+#######################################################################################################################
+{% for s in dnsmasq_dns_filters %}
+{{ s }}
+{% endfor %}
+
+#######################################################################################################################
+# DNSMASQ DNS  'HOSTS'                                                                                                #
+# ------------------------------------------------------------------------------------------------------------------- #
+# no-hosts                                       If you don't want dnsmasq to read /etc/hosts, uncomment the          #
+#                                                following line.                                                      #
+#                                                                                                                     #
+# addn-hosts=/etc/banner_add_hosts               or if you want it to read another file, as well as /etc/hosts, use   #
+#                                                this.                                                                #
+#                                                                                                                     #
+# expand-hosts                                   Set this (and domain: see below) if you want to have a domain        #
+#                                                automatically added to simple names in a hosts-file.                 #
+#                                                                                                                     #
+#######################################################################################################################
+{% for s in dnsmasq_dns_hosts %}
+{{ s }}
+{% endfor %}
+
+#######################################################################################################################
+# DNSMASQ DNS  'INTERFACES'                                                                                           #
+# ------------------------------------------------------------------------------------------------------------------- #
+# interface=eth1                                 If you want dnsmasq to listen for DHCP and DNS requests only on      #
+#                                                specified interfaces (and the loopback) give the name of the         #
+#                                                interface (eg eth0) here.                                            #
+#                                                Repeat the line for more than one interface.                         #
+#                                                                                                                     #
+# except-interface=                              Or you can specify which interface _not_ to listen on                #
+#                                                                                                                     #
+# listen-address=                                Or which to listen on by address (remember to include 127.0.0.1 if   #
+#                                                you use this.)                                                       #
+#                                                                                                                     #
+# no-dhcp-interface=                             If you want dnsmasq to provide only DNS service on an interface,     #
+#                                                configure it as shown above, and then use the following line to      #
+#                                                disable DHCP on it.                                                  #
+#                                                                                                                     #
+# bind-interfaces                                On systems which support it, dnsmasq binds the wildcard address,     #
+#                                                even when it is listening on only some interfaces. It then discards  #
+#                                                requests that it shouldn't reply to. This has the advantage of       #
+#                                                working even when interfaces come and go and change address. If you  #
+#                                                want dnsmasq to really bind only the interfaces it is listening on,  #
+#                                                uncomment this option. About the only time you may need this is when #
+#                                                running another nameserver on the same machine.                      #
+#                                                                                                                     #
+#######################################################################################################################
+{% for s in dnsmasq_dns_interfaces %}
+{{ s }}
+{% endfor %}
+
+#######################################################################################################################
+# DNSMASQ DNS  'RESOLVE'                                                                                              #
+# ------------------------------------------------------------------------------------------------------------------- #
+# resolv-file                                    Change this line if you want dns to get its upstream servers from    #
+#                                                somewhere other that /etc/resolv.conf                                #
+#                                                                                                                     #
+# strict-order                                   By  default,  dnsmasq  will  send queries to any of the upstream     #
+#                                                servers it knows about and tries to favour servers to are  known     #
+#                                                to  be  up.  Uncommenting this forces dnsmasq to try each query      #
+#                                                with  each  server  strictly  in  the  order  they   appear   in     #
+#                                                /etc/resolv.conf                                                     #
+#                                                                                                                     #
+# no-resolv                                      If you don't want dnsmasq to read /etc/resolv.conf or any other      #
+#                                                file, getting its servers from this file instead (see below), then   #
+#                                                uncomment this.                                                      #
+#                                                                                                                     #
+# no-poll                                        If you don't want dnsmasq to poll /etc/resolv.conf or other resolv   #
+#                                                files for changes and re-read them then uncomment this.              #
+#                                                                                                                     #
+#######################################################################################################################
+{% for s in dnsmasq_dns_resolv %}
+{{ s }}
+{% endfor %}
+
+#######################################################################################################################
+# DNSMASQ DNS  'SERVERS'                                                                                              #
+# ------------------------------------------------------------------------------------------------------------------- #
+# server=/localnet/192.168.0.1                   Add other name servers here, with domain specs if they are for       #
+#                                                non-public domains.                                                  #
+#                                                                                                                     #
+# server=/3.168.192.in-addr.arpa/10.1.2.3        Example of routing PTR queries to nameservers: this will send all    #
+#                                                address->name queries for 192.168.3/24 to nameserver 10.1.2.3        #
+#                                                                                                                     #
+#######################################################################################################################
+{% for s in dnsmasq_dns_servers %}
+{{ s }}
+{% endfor %}
+
+#######################################################################################################################
+# DNSMASQ DHCP  'HOST OPTS'                                                                                           #
+# ------------------------------------------------------------------------------------------------------------------- #
+# dhcp-ignore=#known                             Ignore any clients which are specified in dhcp-host lines            #
+#                                                or /etc/ethers. Equivalent to ISC "deny unkown-clients".             #
+#                                                This relies on the special "known" tag which is set when             #
+#                                                a host is matched.                                                   #
+#                                                                                                                     #
+# dhcp-vendorclass=red,Linux                     Send extra options which are tagged as "red" to any machine whose    #
+#                                                DHCP vendorclass string includes the substring "Linux"               #
+#                                                                                                                     #
+# dhcp-userclass=red,accounts                    Send extra options which are tagged as "red" to any machine one      #
+#                                                of whose DHCP userclass strings includes the substring "accounts"    #
+#                                                                                                                     #
+# dhcp-mac=red,00:60:8C:*:*:*                    Send extra options which are tagged as "red" to any machine whose    #
+#                                                MAC address matches the pattern.                                     #
+#                                                                                                                     #
+# read-ethers                                    If this line is uncommented, dnsmasq will read /etc/ethers and act   #
+#                                                on the ethernet-address/IP pairs found there just as if they had     #
+#                                                been given as --dhcp-host options. Useful if you keep                #
+#                                                MAC-address/host mappings there for other purposes.                  #
+#                                                                                                                     #
+#######################################################################################################################
+{% for s in dnsmasq_dhcp_hosts_opts %}
+{{ s }}
+{% endfor %}
+
+#######################################################################################################################
+# DNSMASQ DHCP  'LEASE'                                                                                               #
+# ------------------------------------------------------------------------------------------------------------------- #
+# dhcp-lease-max=150                             Set the limit on DHCP leases, the default is 150                     #
+#                                                                                                                     #
+# dhcp-leasefile=/var/lib/misc/dnsmasq.leases    The DHCP server needs somewhere on disk to keep its lease database.  #
+#                                                This defaults to a sane location, but if you want to change it, use  #
+#                                                the line below.                                                      #
+#                                                                                                                     #
+# dhcp-authoritative                             Set the DHCP server to authoritative mode. In this mode it will barge#
+#                                                in and take over the lease for any client which broadcasts on the    #
+#                                                network, whether it has a record of the lease or not. This avoids    #
+#                                                long timeouts when a machine wakes up on a new network. DO NOT enable# 
+#                                                this if there's the slighest chance that you might end up            #
+#                                                accidentally configuring a DHCP server for your campus/company       #
+#                                                accidentally. The ISC server uses the same option, see               #
+#                                                http://www.isc.org/index.pl?/sw/dhcp/authoritative.php               #
+#                                                                                                                     #
+# dhcp-script=/bin/echo                          Run an executable when a DHCP lease is created or destroyed.         #
+#                                                The arguments sent to the script are "add" or "del",                 #
+#                                                then the MAC address, the IP address and finally the hostname        #
+#                                                if there is one.                                                     #
+#                                                                                                                     #
+#######################################################################################################################
+{% for s in dnsmasq_dhcp_lease %}
+{{ s }}
+{% endfor %}
+
+#######################################################################################################################
+# DNSMASQ DHCP  'RANGES'                                                                                              #
+# ------------------------------------------------------------------------------------------------------------------- #
+# dhcp-range=192.168.0.50,192.168.0.150,12h      Enable the integrated DHCP server.                                   #
+#                                                Supply the range of addresses available for lease and optionally     #
+#                                                a lease time. If you have more than one network, you will need to    #
+#                                                repeat this for each network on which you want to supply DHCP        #
+#                                                service.                                                             #
+#                                                                                                                     #
+# dhcp-range=192.168.0.50,192.168.0.150,255.255.255.0,12h                                                             #
+#                                                This is an example of a DHCP range where the netmask is given. This  #
+#                                                is needed for networks we reach the dnsmasq DHCP server via a relay  #
+#                                                agent. If you don't know what a DHCP relay agent is, you probably    #
+#                                                don't need to worry about this.                                      #
+#                                                                                                                     #
+# dhcp-range=red,192.168.0.50,192.168.0.150      This is an example of a DHCP range with a network-id, so that        #
+#                                                some DHCP options may be set only for this network.                  #
+#                                                                                                                     #
+#######################################################################################################################
+{% for s in dnsmasq_dhcp_ranges %}
+{{ s }}
+{% endfor %}
+
+#######################################################################################################################
+# DNSMASQ   'CONF FILES'                                                                                              #
+# ------------------------------------------------------------------------------------------------------------------- #
+# conf-file=/etc/dnsmasq.more.conf               Include a other configuration file(s).                               #
+#                                                                                                                     #
+# conf-dir=/etc/dnsmasq.d                        Include a another lot of configuration options.                      #
+#                                                                                                                     #
+#######################################################################################################################
+{% for s in dnsmasq_confs %}
+{{ s }}
+{% endfor %}
+
+#######################################################################################################################
+# DNSMASQ   'LOG SETTINGS'                                                                                            #
+# ------------------------------------------------------------------------------------------------------------------- #
+# log-queries                                    For debugging purposes, log each DNS query as it passes through      #
+#                                                dnsmasq.                                                             #
+#                                                                                                                     #
+# log-dhcp                                       Log lots of extra information about DHCP transactions.               #
+#                                                                                                                     #
+####################################################################################################################### 
+{% for s in dnsmasq_logs %}
+{{ s }}
+{% endfor %}
+
+#######################################################################################################################
+# DNSMASQ  'RUN SETTINGS                                                                                              #
+# ------------------------------------------------------------------------------------------------------------------- #
+# user & group                                   If you want dnsmasq to change uid and gid to something other         #
+#                                                than the default, edit the following lines.                          #
+#                                                                                                                     #
+#######################################################################################################################
+{% for s in dnsmasq_run %}
+{{ s }}
+{% endfor %}

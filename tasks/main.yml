@@ -1,0 +1,37 @@
+---
+# tasks file for ansible-role-dnsmasq
+
+# --- install ---
+- name: "apt | ensure dnsmasq present"
+  apt: name=dnsmasq state=present
+  when: ansible_pkg_mgr == 'apt'
+
+
+- name: "yum | ensure dnsmasq present"
+  yum: pkg=dnsmasq state=present
+  when: ansible_pkg_mgr == 'yum'
+
+
+# --- config ---
+- name: "all | ensure templated dnsmasq.conf"
+  template: 
+    src: "dnsmasq.conf.j2" 
+    dest: "{{ dnsmasq_path_conf }}"
+    validate: 'dnsmasq --test --conf-file=%s'
+  notify: restart dnsmasq
+
+
+- name: "all | ensure templated dhcp.hosts"
+  template: src="dnsmasq.d_dhcp.hosts.j2" dest="{{ dnsmasq_path_dhcp_hosts }}"
+
+
+- name: "all | ensure templated dhcp.opts"
+  template: src="dnsmasq.d_dhcp.opts.j2" dest="{{ dnsmasq_path_dhcp_opts }}"
+
+
+# --- service ---
+- name: "all | ensure dnsmasq service running"
+  service:
+    name: dnsmasq
+    state: started
+    enabled: yes

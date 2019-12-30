@@ -9,7 +9,7 @@ dnsmasq_dns_cache: [ "cache-size=1000" ]
 dnsmasq_dns_domains: []
 dnsmasq_dns_filters: [ "domain-needed", "bogus-priv" ] 
 dnsmasq_dns_hosts: []
-dnsmasq_dns_interfaces: [ "interface=wlan0" ] 
+dnsmasq_dns_interfaces: [ "interface=lo" ] 
 dnsmasq_dns_resolv: []
 dnsmasq_dns_servers: []
 
